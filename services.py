@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from sqlalchemy.orm import Session
 
-from database import SessionLocal
+from db import SessionLocal
 from hashing import Hasher
 from models import User, Token
 
@@ -75,7 +75,7 @@ def create_user(user: User, db: Session = Depends(get_db)) -> object:
 
 
 def get_user(user_id: int, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.user_id == user_id).first()
+    user = db.query(User).filter(User.id == user_id).first()
     return user
 
 
@@ -84,8 +84,8 @@ def get_token(user_id: int, db: Session = Depends(get_db)):
     return token
 
 
-def authenticate_user(username: str, password: str, db: Session = Depends(get_db)):
-    user = get_user(username=username, db=db)
+def authenticate_user(user_id: str, password: str, db: Session = Depends(get_db)):
+    user = get_user(user_id, db)
     if not user:
         return False
     if not Hasher.verify_password(password, user.password):
@@ -103,4 +103,3 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
             headers={"WWW-Authenticate": "Bearer"}
         )
     return user
-
