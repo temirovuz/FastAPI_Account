@@ -31,8 +31,8 @@ def token_response(token: str):
     }
 
 
-def signJWT(user_id: str, db: Session = Depends(get_db)):
-    u_id = get_user(username=user_id, db=db)
+def signJWT(user_id: int, db: Session = Depends(get_db)):
+    u_id = get_user(user_id, db)
     get_token_user = get_token(user_id=u_id, db=db)
     if get_token_user:
         return token_response(get_token_user.token)
@@ -84,7 +84,7 @@ def get_token(user_id: int, db: Session = Depends(get_db)):
     return token
 
 
-def authenticate_user(user_id: str, password: str, db: Session = Depends(get_db)):
+def authenticate_user(user_id: int, password: str, db: Session = Depends(get_db)):
     user = get_user(user_id, db)
     if not user:
         return False
